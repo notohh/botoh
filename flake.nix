@@ -47,6 +47,7 @@
           # rust
           rustfmt.enable = true;
           clippy.enable = true;
+          taplo.enable = true;
           # nix
           statix.enable = true;
           alejandra.enable = true;
