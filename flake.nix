@@ -46,7 +46,7 @@
         hooks = {
           # rust
           rustfmt.enable = true;
-          clippy.enable = true;
+          clippy.enable = false;
           taplo.enable = true;
           # nix
           statix.enable = true;
