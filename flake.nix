@@ -31,7 +31,7 @@
         src = self;
 
         cargoLock = {
-          lockFile = ./.;
+          lockFile = ./Cargo.lock;
         };
 
         nativeBuildInputs = with pkgs; [pkg-config];
