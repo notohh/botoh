@@ -1,5 +1,6 @@
 use client::create_client;
-use commands::*;
+use commands::ping::ping_command;
+use commands::test::test_command;
 use std::collections::HashMap;
 
 use twitch_irc::{
@@ -21,7 +22,6 @@ pub async fn main() {
     initial_channels.insert("notnotoh", ());
     initial_channels.insert("notohh", ());
     initial_channels.insert("daph", ());
-    initial_channels.insert("ryanpotat", ());
 
     for (channels, _) in initial_channels.iter() {
         match client.join(channels.to_owned().to_string()) {
@@ -40,8 +40,8 @@ pub async fn main() {
                     );
                     if msg.sender.name == "notohh" {
                         match msg.message_text.as_str() {
-                            "*ping" => ping(&msg).await,
-                            "*test" => test(&msg).await,
+                            "*ping" => ping_command(&msg).await,
+                            "*test" => test_command(&msg).await,
                             _ => {}
                         }
                     }
