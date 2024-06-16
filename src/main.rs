@@ -1,5 +1,5 @@
+use commands::lastfm::lastfm_command;
 use commands::ping::ping_command;
-use commands::test::test_command;
 use std::collections::HashMap;
 
 use client::client;
@@ -36,7 +36,7 @@ pub async fn main() {
                     if msg.sender.name == "notohh" {
                         match msg.message_text.as_str() {
                             "*ping" => ping_command(&msg, &client).await,
-                            "*test" => test_command(&msg, &client).await,
+                            "*song" => lastfm_command(&msg, &client).await,
                             _ => {}
                         }
                     }
