@@ -87,6 +87,7 @@ name = "botoh"
 version = "0.1.0"
 dependencies = [
  "dotenv",
+ "log",
  "pretty_env_logger",
  "reqwest",
  "serde",

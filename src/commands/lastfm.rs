@@ -108,9 +108,9 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
                     Err(e) => eprintln!("{}", e),
                 }
             } else {
-                println!("Response error: {}", response.status());
+                error!("Response error: {}", response.status());
             }
         }
-        Err(e) => eprintln!("Error sending request: {}", e),
+        Err(e) => error!("Error sending request: {}", e),
     }
 }

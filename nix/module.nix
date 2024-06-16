@@ -19,7 +19,10 @@ in {
       type = types.package;
       inherit (self.packages.${system}) default;
     };
-
+    log_level = mkOption {
+      type = types.str;
+      default = "info";
+    };
     environmentFiles = mkOption {
       type = types.listOf types.path;
       default = [];
@@ -33,6 +36,9 @@ in {
   config = mkIf cfg.enable {
     systemd.services.botoh = {
       wantedBy = ["multi-user.target"];
+      environment = {
+        RUST_LOG = cfg.log_level;
+      };
       serviceConfig = {
         EnvironmentFile = cfg.environmentFiles;
         ExecStart = "${cfg.package}/bin/botoh";

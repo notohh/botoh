@@ -73,6 +73,7 @@
           ])
         ];
         RUST_BACKTRACE = 1;
+        RUST_LOG = "info";
         RUST_SRC_PATH = "${fenix.packages.${system}.complete.rust-src}/lib/rustlib/src/rust/library";
       };
     });
