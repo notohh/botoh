@@ -1,37 +1,32 @@
-use client::create_client;
 use commands::ping::ping_command;
 use commands::test::test_command;
 use std::collections::HashMap;
 
-use twitch_irc::{
-    login::StaticLoginCredentials, message::ServerMessage, SecureTCPTransport, TwitchIRCClient,
-};
+use client::client;
+use twitch_irc::message::ServerMessage;
 
 mod client;
 mod commands;
 
 #[tokio::main]
 pub async fn main() {
-    let client = create_client();
-
-    let (mut incoming_messages, client) =
-        TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(client);
-
     let mut initial_channels = HashMap::new();
+
+    let mut client = client();
 
     initial_channels.insert("notnotoh", ());
     initial_channels.insert("notohh", ());
     initial_channels.insert("daph", ());
 
     for (channels, _) in initial_channels.iter() {
-        match client.join(channels.to_owned().to_string()) {
+        match client.twitch_client.join(channels.to_owned().to_string()) {
             Ok(_) => println!("Joined channel {}", channels),
             Err(e) => eprintln!("Failed to join channels! {}", e),
         }
     }
 
     let message_handler = tokio::spawn(async move {
-        while let Some(message) = incoming_messages.recv().await {
+        while let Some(message) = client.incoming_messages.recv().await {
             match message {
                 ServerMessage::Privmsg(msg) => {
                     println!(
@@ -40,8 +35,8 @@ pub async fn main() {
                     );
                     if msg.sender.name == "notohh" {
                         match msg.message_text.as_str() {
-                            "*ping" => ping_command(&msg).await,
-                            "*test" => test_command(&msg).await,
+                            "*ping" => ping_command(&msg, &client).await,
+                            "*test" => test_command(&msg, &client).await,
                             _ => {}
                         }
                     }

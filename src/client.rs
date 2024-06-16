@@ -1,8 +1,15 @@
 use std::env;
 
 use dotenv::dotenv;
-use twitch_irc::login::StaticLoginCredentials;
-use twitch_irc::ClientConfig;
+use twitch_irc::{
+    login::StaticLoginCredentials, message::ServerMessage, ClientConfig, SecureTCPTransport,
+    TwitchIRCClient,
+};
+
+pub struct TwitchClient {
+    pub incoming_messages: tokio::sync::mpsc::UnboundedReceiver<ServerMessage>,
+    pub twitch_client: TwitchIRCClient<SecureTCPTransport, StaticLoginCredentials>,
+}
 
 pub fn create_client() -> ClientConfig<StaticLoginCredentials> {
     dotenv().ok();
@@ -13,4 +20,16 @@ pub fn create_client() -> ClientConfig<StaticLoginCredentials> {
     let login_creds = StaticLoginCredentials::new(twitch_id, Some(twitch_oauth));
 
     ClientConfig::new_simple(login_creds)
+}
+
+pub fn client() -> TwitchClient {
+    let config = create_client();
+
+    let (incoming_messages, twitch_client) =
+        TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(config);
+
+    TwitchClient {
+        twitch_client,
+        incoming_messages,
+    }
 }
