@@ -13,13 +13,16 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) {
     if let Some(process) = sys.process(pid) {
         let process_memory = process.memory();
         let mem = process_memory as f64 / (1024.0 * 1024.0);
-        let cpu = process.cpu_usage().round();
-        let uptime = process.run_time();
+
+        let uptime_seconds = process.run_time();
+        let uptime_minute = uptime_seconds / 60;
+        let remaining_seconds = uptime_seconds % 60;
 
         let host = System::name().unwrap();
+
         let s = format!(
-            "Pong! | ↑: {}s | Host: {:?} | Mem: {:.2} MB | CPU: {:?}%",
-            uptime, host, mem, cpu
+            "Pong! | ↑: {}m {}s | Host: {} | Mem: {:.2} MB",
+            uptime_minute, remaining_seconds, host, mem
         );
         let _message = c
             .twitch_client
