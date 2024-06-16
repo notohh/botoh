@@ -19,12 +19,22 @@ in {
       type = types.package;
       inherit (self.packages.${system}) default;
     };
+    twitch_id = mkOption {
+      type = types.str;
+    };
+    twitch_oauth = mkOption {
+      type = types.str;
+    };
   };
 
   config = mkIf cfg.enable {
     systemd.services.botoh = {
       wantedBy = ["multi-user.target"];
       serviceConfig.ExecStart = "${cfg.package}/bin/botoh";
+      environment = {
+        TWITCH_ID = cfg.twitch_id;
+        TWITCH_OAUTH = cfg.twitch_oauth;
+      };
     };
   };
 }
