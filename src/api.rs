@@ -18,18 +18,19 @@ pub struct HelixClient {
 
 impl HelixClient {
     pub fn new(base_url: &str) -> HelixClient {
-        let twitch_client_id = env::var("TWITCH_CLIENT_ID").expect("a");
-        let twitch_auth_token = env::var("TWITCH_AUTH").expect("a");
+        let twitch_client_id =
+            env::var("TWITCH_CLIENT_ID").expect("Couldnt load twitch client id.");
+        let twitch_auth_token = env::var("TWITCH_AUTH").expect("Couldnt load twitch auth token.");
 
         let mut headers = HeaderMap::new();
 
         headers.insert(
             "Authorization",
-            HeaderValue::from_str(&twitch_auth_token).expect("a"),
+            HeaderValue::from_str(&twitch_auth_token).expect("Failed to insert twitch auto token."),
         );
         headers.insert(
             "Client-Id",
-            HeaderValue::from_str(&twitch_client_id).expect("a"),
+            HeaderValue::from_str(&twitch_client_id).expect("Failed to insert twitch client id."),
         );
 
         let client = Client::builder()
