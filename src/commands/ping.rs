@@ -21,12 +21,9 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) {
         let host = System::name().unwrap();
 
         let s = format!(
-            "Pong! | ↑: {}m {}s | Host: {} | Mem: {:.2} MB",
+            "🚀Pong! | ↑: {}m {}s | Host: {} | Mem: {:.2} MB",
             uptime_minute, remaining_seconds, host, mem
         );
-        let _message = c
-            .twitch_client
-            .say(m.channel_login.to_owned(), s.to_owned())
-            .await;
+        let _message = c.twitch_client.say(m.channel_login.to_owned(), s).await;
     }
 }

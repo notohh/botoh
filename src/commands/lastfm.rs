@@ -91,7 +91,7 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
     match client.get(recent_tracks_url).send().await {
         Ok(response) => {
             if response.status().is_success() {
-                let body = response.text().await.unwrap();
+                let body = response.text().await.unwrap_or_default();
                 match serde_json::from_str::<Data>(&body) {
                     Ok(payload) => {
                         if let Some(tracks) = payload.recenttracks.track.first() {
@@ -105,7 +105,7 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
                                 .expect("Error sending message to twitch");
                         }
                     }
-                    Err(e) => eprintln!("{}", e),
+                    Err(e) => error!("{}", e),
                 }
             } else {
                 error!("Response error: {}", response.status());

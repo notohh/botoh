@@ -11,7 +11,7 @@ pub struct TwitchClient {
     pub twitch_client: TwitchIRCClient<SecureTCPTransport, StaticLoginCredentials>,
 }
 
-pub fn create_client() -> ClientConfig<StaticLoginCredentials> {
+pub fn client_config() -> ClientConfig<StaticLoginCredentials> {
     dotenv().ok();
     let twitch_id = env::var("TWITCH_ID").expect("Failed to load twitch id");
 
@@ -23,7 +23,7 @@ pub fn create_client() -> ClientConfig<StaticLoginCredentials> {
 }
 
 pub fn client() -> TwitchClient {
-    let config = create_client();
+    let config = client_config();
 
     let (incoming_messages, twitch_client) =
         TwitchIRCClient::<SecureTCPTransport, StaticLoginCredentials>::new(config);

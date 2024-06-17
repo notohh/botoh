@@ -1,10 +1,13 @@
 use commands::lastfm::lastfm_command;
+use commands::logs::logs_command;
 use commands::ping::ping_command;
+use commands::user::get_user_command;
 use std::collections::HashMap;
 
 use client::client;
 use twitch_irc::message::ServerMessage;
 
+mod api;
 mod client;
 mod commands;
 
@@ -22,7 +25,6 @@ pub async fn main() {
     initial_channels.insert("notnotoh", ());
     initial_channels.insert("notohh", ());
     initial_channels.insert("daph", ());
-    initial_channels.insert("elis", ());
 
     for (channels, _) in initial_channels.iter() {
         match client.twitch_client.join(channels.to_owned().to_string()) {
@@ -35,14 +37,23 @@ pub async fn main() {
         while let Some(message) = client.incoming_messages.recv().await {
             match message {
                 ServerMessage::Privmsg(msg) => {
-                    println!(
-                        "(#{}) {}: {}",
-                        msg.channel_login, msg.sender.name, msg.message_text
-                    );
-                    if msg.sender.name == "notohh" {
-                        match msg.message_text.as_str() {
-                            "*ping" => ping_command(&msg, &client).await,
-                            "*song" => lastfm_command(&msg, &client).await,
+                    let channel = msg.channel_login.clone();
+                    let sender = msg.sender.name.clone();
+                    let contents = msg.message_text.clone();
+                    let prefix = "*";
+
+                    println!("(#{}) {}: {}", &channel, &sender, &contents);
+
+                    if sender == "notohh" && contents.starts_with(prefix) {
+                        let mut parts = contents.split_whitespace();
+                        let command = parts.next().unwrap_or("").trim_start_matches(prefix);
+                        let arguments: Vec<&str> = parts.collect();
+
+                        match command {
+                            "ping" => ping_command(&msg, &client).await,
+                            "song" => lastfm_command(&msg, &client).await,
+                            "user" => get_user_command(&msg, &client, &arguments).await,
+                            "logs" => logs_command(&msg, &client, &arguments).await,
                             _ => {}
                         }
                     }
