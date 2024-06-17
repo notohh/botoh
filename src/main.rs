@@ -1,5 +1,6 @@
 use commands::lastfm::lastfm_command;
 use commands::logs::logs_command;
+use commands::massping::massping_command;
 use commands::ping::ping_command;
 use commands::user::get_user_command;
 use std::collections::HashMap;
@@ -18,8 +19,8 @@ extern crate pretty_env_logger;
 #[tokio::main]
 pub async fn main() {
     pretty_env_logger::try_init().expect("Failed to load logger");
-    let mut initial_channels = HashMap::new();
 
+    let mut initial_channels = HashMap::new();
     let mut client = client();
 
     initial_channels.insert("notnotoh", ());
@@ -50,10 +51,13 @@ pub async fn main() {
                         let arguments: Vec<&str> = parts.collect();
 
                         match command {
-                            "ping" => ping_command(&msg, &client).await,
-                            "song" => lastfm_command(&msg, &client).await,
-                            "user" => get_user_command(&msg, &client, &arguments).await,
+                            "ping" => ping_command(&msg, &client).await.unwrap_or_default(),
+                            "song" => lastfm_command(&msg, &client).await.unwrap_or_default(),
+                            "user" => get_user_command(&msg, &client, &arguments)
+                                .await
+                                .unwrap_or_default(),
                             "logs" => logs_command(&msg, &client, &arguments).await,
+                            "massping" => massping_command(&msg, &client).await.unwrap_or_default(),
                             _ => {}
                         }
                     }

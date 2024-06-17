@@ -3,8 +3,9 @@ use twitch_irc::message::PrivmsgMessage;
 
 use serde::{Deserialize, Serialize};
 
-use crate::api::helix_client;
+use crate::api::HelixClient;
 use crate::client::TwitchClient;
+use std::error::Error;
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Data {
@@ -26,19 +27,21 @@ struct UserData {
     view_count: i64,
 }
 
-pub async fn get_user_command(m: &PrivmsgMessage, c: &TwitchClient, a: &[&str]) {
+pub async fn get_user_command(
+    m: &PrivmsgMessage,
+    c: &TwitchClient,
+    a: &[&str],
+) -> Result<(), Box<dyn Error>> {
     dotenv().ok();
 
-    let url = format!("https://api.twitch.tv/helix/users?login={}", a.join(" "));
-
-    let helix_client = helix_client();
-
+    let base_url = format!("https://api.twitch.tv/helix/users?login={}", a.join(" "));
+    let helix_client = HelixClient::new(&base_url).client;
     let twitch_client = c.twitch_client.clone();
 
-    match helix_client.get(url).send().await {
+    match helix_client.get(base_url).send().await {
         Ok(response) => {
             if response.status().is_success() {
-                let body = response.text().await.unwrap_or_default();
+                let body = response.text().await?;
                 match serde_json::from_str::<Data>(&body) {
                     Ok(payload) => {
                         for items in payload.data {
@@ -50,22 +53,19 @@ pub async fn get_user_command(m: &PrivmsgMessage, c: &TwitchClient, a: &[&str]) 
                                 items.broadcaster_type.to_uppercase(),
                                 items.profile_image_url
                             );
-                            twitch_client
-                                .say(m.channel_login.to_owned(), s)
-                                .await
-                                .expect("Failed to send message");
+                            twitch_client.say(m.channel_login.to_owned(), s).await?
                         }
                     }
                     Err(e) => error!("Failed: {}", e),
                 }
             } else {
-                let error = format!("Error with response: {}", response.status());
                 twitch_client
-                    .say(m.channel_login.to_owned(), error)
-                    .await
-                    .expect("Error sending message to twitch.");
+                    .say(m.channel_login.to_owned(), response.status().to_string())
+                    .await?
             }
         }
         Err(e) => error!("Error sending request: {}", e),
     }
+
+    Ok(())
 }

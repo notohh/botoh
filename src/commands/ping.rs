@@ -1,9 +1,10 @@
 use crate::client::TwitchClient;
 use sysinfo::System;
 
+use std::error::Error;
 use twitch_irc::message::PrivmsgMessage;
 
-pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) {
+pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Box<dyn Error>> {
     let mut sys = System::new_all();
 
     sys.refresh_all();
@@ -24,6 +25,7 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) {
             "🚀Pong! | ↑: {}m {}s | Host: {} | Mem: {:.2} MB",
             uptime_minute, remaining_seconds, host, mem
         );
-        let _message = c.twitch_client.say(m.channel_login.to_owned(), s).await;
+        c.twitch_client.say(m.channel_login.to_owned(), s).await?;
     }
+    Ok(())
 }

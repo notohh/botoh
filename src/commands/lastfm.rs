@@ -2,6 +2,7 @@ use crate::client::TwitchClient;
 use dotenv::dotenv;
 use serde::{Deserialize, Serialize};
 use std::env;
+use std::error::Error;
 
 use twitch_irc::message::PrivmsgMessage;
 
@@ -75,7 +76,7 @@ pub enum Size {
     Small,
 }
 
-pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
+pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Box<dyn Error>> {
     dotenv().ok();
 
     let lastfm_api_key = env::var("LASTFM_API_KEY").expect("Failed to load lastfm api key.");
@@ -91,7 +92,7 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
     match client.get(recent_tracks_url).send().await {
         Ok(response) => {
             if response.status().is_success() {
-                let body = response.text().await.unwrap_or_default();
+                let body = response.text().await?;
                 match serde_json::from_str::<Data>(&body) {
                     Ok(payload) => {
                         if let Some(tracks) = payload.recenttracks.track.first() {
@@ -101,8 +102,7 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
                             );
                             c.twitch_client
                                 .say(m.channel_login.to_owned(), s.to_owned())
-                                .await
-                                .expect("Error sending message to twitch");
+                                .await?
                         }
                     }
                     Err(e) => error!("{}", e),
@@ -113,4 +113,5 @@ pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) {
         }
         Err(e) => error!("Error sending request: {}", e),
     }
+    Ok(())
 }
