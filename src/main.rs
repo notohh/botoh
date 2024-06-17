@@ -56,7 +56,9 @@ pub async fn main() {
                             "user" => get_user_command(&msg, &client, &arguments)
                                 .await
                                 .unwrap_or_default(),
-                            "logs" => logs_command(&msg, &client, &arguments).await,
+                            "logs" => logs_command(&msg, &client, &arguments)
+                                .await
+                                .unwrap_or_default(),
                             "massping" => massping_command(&msg, &client).await.unwrap_or_default(),
                             _ => {}
                         }
