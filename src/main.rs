@@ -21,6 +21,8 @@ pub async fn main() {
 
     initial_channels.insert("notnotoh", ());
     initial_channels.insert("notohh", ());
+    initial_channels.insert("daph", ());
+    initial_channels.insert("elis", ());
 
     for (channels, _) in initial_channels.iter() {
         match client.twitch_client.join(channels.to_owned().to_string()) {
