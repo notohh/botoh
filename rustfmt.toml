@@ -1,0 +1,5 @@
+version = "Two"
+edition = "2021"
+error_on_unformatted = true
+imports_granularity = "Module"
+fn_args_layout = "Tall"
