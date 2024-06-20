@@ -20,7 +20,6 @@ extern crate pretty_env_logger;
 
 #[tokio::main]
 pub async fn main() {
-    console_subscriber::init();
     pretty_env_logger::try_init().expect("Failed to load logger");
     let mut client = client();
 
@@ -36,11 +35,11 @@ pub async fn main() {
     let message_handler = tokio::spawn(async move {
         while let Some(message) = client.incoming_messages.recv().await {
             match message {
-                ServerMessage::Privmsg(msg) => {
-                    let is_moderator = msg.badges.iter().any(|badge| badge.name == "moderator");
-                    let channel = msg.channel_login.clone();
-                    let sender = msg.sender.name.clone();
-                    let contents = msg.message_text.clone();
+                ServerMessage::Privmsg(m) => {
+                    let is_moderator = m.badges.iter().any(|badge| badge.name == "moderator");
+                    let channel = m.channel_login.clone();
+                    let sender = m.sender.name.clone();
+                    let contents = m.message_text.clone();
                     let prefix = "*";
 
                     println!("(#{}) {}: {}", &channel, &sender, &contents);
@@ -53,58 +52,58 @@ pub async fn main() {
                         match command {
                             "ping" => {
                                 if is_moderator {
-                                    ping_command(&msg, &client).await.unwrap_or_default();
+                                    ping_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    ping_command(&msg, &client).await.unwrap_or_default();
+                                    ping_command(&m, &client).await.unwrap_or_default();
                                 }
                             }
                             "song" => {
                                 if is_moderator {
-                                    lastfm_command(&msg, &client).await.unwrap_or_default();
+                                    lastfm_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    lastfm_command(&msg, &client).await.unwrap_or_default();
+                                    lastfm_command(&m, &client).await.unwrap_or_default();
                                 }
                             }
                             "user" => {
                                 if is_moderator {
-                                    get_user_command(&msg, &client, &arguments)
+                                    get_user_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    get_user_command(&msg, &client, &arguments)
+                                    get_user_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
                                 }
                             }
                             "logs" => {
                                 if is_moderator {
-                                    logs_command(&msg, &client, &arguments)
+                                    logs_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    logs_command(&msg, &client, &arguments)
+                                    logs_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
                                 }
                             }
                             "massping" => {
                                 if is_moderator {
-                                    massping_command(&msg, &client).await.unwrap_or_default();
+                                    massping_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    massping_command(&msg, &client).await.unwrap_or_default()
+                                    massping_command(&m, &client).await.unwrap_or_default()
                                 }
                             }
                             _ => {}
                         }
                     }
                 }
-                ServerMessage::Whisper(msg) => {
-                    println!("(w) {}: {}", msg.sender.name, msg.message_text);
+                ServerMessage::Whisper(m) => {
+                    println!("(w) {}: {}", m.sender.name, m.message_text);
                 }
                 _ => {}
             }

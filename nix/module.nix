@@ -38,7 +38,6 @@ in {
       wantedBy = ["multi-user.target"];
       environment = {
         RUST_LOG = cfg.log_level;
-        RUSTFLAGS = "--cfg tokio_unstable";
       };
       serviceConfig = {
         EnvironmentFile = cfg.environmentFiles;
