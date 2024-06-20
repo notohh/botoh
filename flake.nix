@@ -63,6 +63,7 @@
           alejandra
           openssl
           pkg-config
+          tokio-console
           (fenix.packages.${system}.complete.withComponents [
             "cargo"
             "clippy"
@@ -75,6 +76,7 @@
         RUST_BACKTRACE = 1;
         RUST_LOG = "info";
         RUST_SRC_PATH = "${fenix.packages.${system}.complete.rust-src}/lib/rustlib/src/rust/library";
+        RUSTFLAGS = "--cfg tokio_unstable";
       };
     });
     nixosModules.default = import ./nix/module.nix {inherit self;};
