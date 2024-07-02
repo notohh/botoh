@@ -6,6 +6,7 @@ use commands::logs::logs_command;
 use commands::massping::massping_command;
 use commands::ping::ping_command;
 use commands::user::get_user_command;
+use dotenv::dotenv;
 
 use client::client;
 use twitch_irc::message::ServerMessage;
@@ -20,10 +21,11 @@ extern crate pretty_env_logger;
 
 #[tokio::main]
 pub async fn main() {
+    dotenv().ok();
     pretty_env_logger::try_init().expect("Failed to load logger");
     let mut client = client();
 
-    let initial_channels = vec!["notnotoh", "notohh", "daph", "fembotfriday"];
+    let initial_channels = vec!["notnotoh", "notohh", "daph", "fembotfriday", "miwo", "elis"];
 
     for &channel in &initial_channels {
         match client.twitch_client.join(channel.to_string()) {

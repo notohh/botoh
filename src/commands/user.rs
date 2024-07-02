@@ -32,8 +32,6 @@ pub async fn get_user_command(
     c: &TwitchClient,
     a: &[&str],
 ) -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
-
     let base_url = format!("https://api.twitch.tv/helix/users?login={}", a.join(" "));
     let helix_client = HelixClient::new(&base_url).client;
     let twitch_client = c.twitch_client.clone();

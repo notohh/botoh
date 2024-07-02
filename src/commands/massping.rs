@@ -18,8 +18,6 @@ struct UserData {
 }
 
 pub async fn massping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
-
     let base_url =
         "https://api.twitch.tv/helix/chat/chatters?broadcaster_id=69768189&moderator_id=69768189";
 

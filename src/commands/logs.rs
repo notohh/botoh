@@ -9,7 +9,6 @@ pub async fn logs_command(
     c: &TwitchClient,
     a: &[&str],
 ) -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
     let twitch_client = c.twitch_client.clone();
 
     if let Some(_args) = a.first() {

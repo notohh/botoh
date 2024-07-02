@@ -77,14 +77,12 @@ pub enum Size {
 }
 
 pub async fn lastfm_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Box<dyn Error>> {
-    dotenv().ok();
-
     let lastfm_api_key = env::var("LASTFM_API_KEY").expect("Failed to load lastfm api key.");
     let user = "notoh";
 
     let recent_tracks_url = format!(
-        "http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user={}&api_key={}&format=json&nowplaying=true", user,
-        lastfm_api_key
+        "http://ws.audioscrobbler.com/2.0/?method=user.getRecentTracks&user={}&api_key={}&format=json&nowplaying=true",
+        user, lastfm_api_key
     );
 
     let client = reqwest::Client::new();
