@@ -1,7 +1,9 @@
 use crate::client::TwitchClient;
 use sysinfo::System;
 
-use std::{error::Error, thread::sleep, time::Duration};
+use std::error::Error;
+use std::thread::sleep;
+use std::time::Duration;
 use twitch_irc::message::PrivmsgMessage;
 
 pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Box<dyn Error>> {
@@ -17,17 +19,20 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Bo
         let mem = process_memory as f64 / (1024.0 * 1024.0);
 
         let uptime_seconds = process.run_time();
-        let uptime_minute = uptime_seconds / 60;
+        let uptime_minutes = uptime_seconds % (60 * 60) / 60;
+        let uptime_hours = uptime_seconds / (60 * 60);
+        let uptime_days = uptime_hours / 24;
+
         let remaining_seconds = uptime_seconds % 60;
+        let remaining_minutes = uptime_minutes % 60;
+        let remaining_hours = uptime_hours % 60;
 
         let host = System::name().unwrap();
 
         let s = format!(
-            "🚀Pong! | ↑: {}m {}s | Host: {} | Mem: {:.2} MB",
-            uptime_minute, remaining_seconds, host, mem
+            "🚀Pong! | ↑: {}d {}h {}m {}s | Host: {} | Mem: {:.2} MB",
+            uptime_days, remaining_hours, remaining_minutes, remaining_seconds, host, mem
         );
-
-        // need to make this check global for all commands eventually
 
         c.twitch_client.say(channel, s).await?;
     }
