@@ -39,6 +39,7 @@ pub async fn main() {
             match message {
                 ServerMessage::Privmsg(m) => {
                     let is_moderator = m.badges.iter().any(|badge| badge.name == "moderator");
+                    let is_broadcaster = m.badges.iter().any(|badge| badge.name == "broadcaster");
                     let channel = m.channel_login.clone();
                     let sender = m.sender.name.clone();
                     let contents = m.message_text.clone();
@@ -53,7 +54,7 @@ pub async fn main() {
 
                         match command {
                             "ping" => {
-                                if is_moderator {
+                                if is_moderator || is_broadcaster {
                                     ping_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
@@ -61,7 +62,7 @@ pub async fn main() {
                                 }
                             }
                             "song" => {
-                                if is_moderator {
+                                if is_moderator || is_broadcaster {
                                     lastfm_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
@@ -69,7 +70,7 @@ pub async fn main() {
                                 }
                             }
                             "user" => {
-                                if is_moderator {
+                                if is_moderator || is_broadcaster {
                                     get_user_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
@@ -81,7 +82,7 @@ pub async fn main() {
                                 }
                             }
                             "logs" => {
-                                if is_moderator {
+                                if is_moderator || is_broadcaster {
                                     logs_command(&m, &client, &arguments)
                                         .await
                                         .unwrap_or_default();
@@ -93,7 +94,7 @@ pub async fn main() {
                                 }
                             }
                             "massping" => {
-                                if is_moderator {
+                                if is_moderator || is_broadcaster {
                                     massping_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
