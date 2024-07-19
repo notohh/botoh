@@ -25,7 +25,7 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Bo
 
         let remaining_seconds = uptime_seconds % 60;
         let remaining_minutes = uptime_minutes % 60;
-        let remaining_hours = uptime_hours % 60;
+        let remaining_hours = uptime_hours % 24;
 
         let host = System::name().unwrap();
 
