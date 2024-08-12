@@ -30,8 +30,8 @@ pub async fn ping_command(m: &PrivmsgMessage, c: &TwitchClient) -> Result<(), Bo
         let host = System::name().unwrap();
 
         let s = format!(
-            "🚀Pong! | ↑: {}d {}h {}m {}s | Host: {} | Mem: {:.2} MB",
-            uptime_days, remaining_hours, remaining_minutes, remaining_seconds, host, mem
+            "🚀Pong! | ↑: {}d {}h {}m | Host: {} | Mem: {:.2} MB",
+            uptime_days, remaining_hours, remaining_minutes, host, mem
         );
 
         c.twitch_client.say(channel, s).await?;
