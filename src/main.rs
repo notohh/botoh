@@ -25,7 +25,16 @@ pub async fn main() {
     pretty_env_logger::try_init().expect("Failed to load logger");
     let mut client = client();
 
-    let initial_channels = vec!["notnotoh", "notohh", "daph", "fembotfriday", "miwo", "elis"];
+    let initial_channels = vec![
+        "notnotoh",
+        "notohh",
+        "daph",
+        "fembotfriday",
+        "miwo",
+        "elis",
+        "cupofkath",
+        "cupofkathi",
+    ];
 
     for &channel in &initial_channels {
         match client.twitch_client.join(channel.to_string()) {
@@ -98,7 +107,7 @@ pub async fn main() {
                                     massping_command(&m, &client).await.unwrap_or_default();
                                 } else {
                                     sleep(Duration::from_secs(1));
-                                    massping_command(&m, &client).await.unwrap_or_default()
+                                    massping_command(&m, &client).await.unwrap_or_default();
                                 }
                             }
                             _ => {}
